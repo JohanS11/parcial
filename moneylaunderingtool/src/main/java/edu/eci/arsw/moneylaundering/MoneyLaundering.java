@@ -75,6 +75,18 @@ public class MoneyLaundering extends Thread {
             }
 
         }
+        amountOfFilesProcessed.set(0);
+        List<File> transactionFiles = getTransactionFileList();
+        amountOfFilesTotal = transactionFiles.size();
+
+        for (int i = ini; i < fin; i++) {
+            List<Transaction> transactions = transactionReader.readTransactionsFromFile(transactionFiles.get(i));
+            for (Transaction transaction : transactions) {
+                transactionAnalyzer.addTransaction(transaction);
+            }
+            amountOfFilesProcessed.incrementAndGet();
+        }
+        num.decrementAndGet();
     }
 
     public void processTransactionData() {
@@ -103,30 +115,6 @@ public class MoneyLaundering extends Thread {
         }
         return csvFiles;
     }
-
-   /* public static void main(String[] args)
-    {
-        System.out.println(getBanner());
-        System.out.println(getHelp());
-        MoneyLaundering moneyLaundering = new MoneyLaundering();
-        Thread processingThread = new Thread(() -> moneyLaundering.processTransactionData());
-        processingThread.start();
-        while(true)
-        {
-            Scanner scanner = new Scanner(System.in);
-            String line = scanner.nextLine();
-            if(line.contains("exit"))
-            {
-                System.exit(0);
-            }
-
-            String message = "Processed %d out of %d files.\nFound %d suspect accounts:\n%s";
-            List<String> offendingAccounts = moneyLaundering.getOffendingAccounts();
-            String suspectAccounts = offendingAccounts.stream().reduce("", (s1, s2)-> s1 + "\n"+s2);
-            message = String.format(message, moneyLaundering.amountOfFilesProcessed.get(), moneyLaundering.amountOfFilesTotal, offendingAccounts.size(), suspectAccounts);
-            System.out.println(message);
-        }
-    }*/
 
     private static String getBanner() {
         String banner = "\n";

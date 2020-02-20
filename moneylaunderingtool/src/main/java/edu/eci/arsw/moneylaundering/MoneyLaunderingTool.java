@@ -16,11 +16,11 @@ public class MoneyLaunderingTool {
 
     public static void main(String[] args)
     {
+        //MoneyLaundering moneyLaundering1 = new MoneyLaundering();
+        //Thread processingThread = new Thread(() -> moneyLaundering1.processTransactionData());
+
+        //processingThread.start();
         MoneyLaundering moneyLaundering1 = new MoneyLaundering();
-        /*Thread processingThread = new Thread(() -> moneyLaundering1.processTransactionData());
-
-        processingThread.start();*/
-
         int numHil = 5;
         MoneyLaundering[] threads = new MoneyLaundering[ numHil ];
         int start=0;
@@ -30,26 +30,26 @@ public class MoneyLaunderingTool {
 
         for (int i=0; i<numHil;i++){
 
-            if(!(i==numHil-1)){
-                threads[i]=new MoneyLaundering(start,start+div,atomicH);
-
-            }
-            else{
+            if(i==numHil-1){
                 int residuo = moneyLaundering1.getAmountOfFilesTotal()%numHil;
                 threads[i]=new MoneyLaundering(start,start+div+residuo,atomicH);
+            }
+            else{
+                threads[i]=new MoneyLaundering(start,start+div,atomicH);
             }
 
             threads[i].start();
             start+=div;
 
         }
+        /*
         for (int i=0; i<numHil;i++){
             try {
                 threads[i].join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
 
         while(atomicH.get()>0)
         {
@@ -66,7 +66,6 @@ public class MoneyLaunderingTool {
             String message = "Processed %d out of %d files.\nFound %d suspect accounts:\n%s";
             List<String> offendingAccounts = MoneyLaundering.getOffendingAccounts();
             String suspectAccounts = offendingAccounts.stream().reduce("", (s1, s2)-> s1 + "\n"+s2);
-
             message = String.format(message, MoneyLaundering.getAmountOfFilesProcessed().get(), MoneyLaundering.getAmountOfFilesTotal(), offendingAccounts.size(), suspectAccounts);
             System.out.println(message);
         }
